@@ -1,3 +1,6 @@
+# Copyright 2023 Michael Büchler
+# SPDX-License-Identifier: Apache-2.0
+
 # adjust pin numbers,
 # copy this file to /pyboard/main.py and start playing.
 # get the dump from /pyboard/dump
@@ -6,8 +9,9 @@
 from machine import I2C, Pin
 import time
 
-devaddr_normal = 0x54
-devaddr_extra  = 0x5c
+# addresses of an AT24RF08 on the i2c bus
+devaddr_base  = 0x54
+devaddr_extra = 0x5c
 
 BLOCKS   = 8
 PAGES    = 8
@@ -26,8 +30,8 @@ def dump():
             for page in range(PAGES):
                 addr = (block&1)*PAGES*PAGESIZE + page*PAGESIZE
                 print(f"Sequentially reading {PAGESIZE} bytes from block {block}, page {page} -> addr {addr}")
-                devaddr = devaddr_normal + (block>>1)
-                print(f"The device address is {hex(devaddr)}")
+                devaddr = devaddr_base + (block>>1)
+                print(f"The current i2c device address is {hex(devaddr)}")
                 f.write(i2c.readfrom_mem(devaddr, addr, PAGESIZE))
 
 # just dump the APP bytes for the protection of the main 8 blocks of memory
